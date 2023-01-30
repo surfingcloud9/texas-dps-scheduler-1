@@ -5,7 +5,12 @@ import parseConfig from '../Config';
 import * as log from '../Log';
 import dayjs from 'dayjs';
 import isBetween from 'dayjs/plugin/isBetween';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
 dayjs.extend(isBetween);
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.tz.setDefault('America/Chicago');
 import prompts from 'prompts';
 
 import type { EligibilityPayload } from '../Interfaces/Eligibility';
@@ -90,7 +95,7 @@ class TexasScheduler {
     public async requestAvaliableLocation(): Promise<void> {
         const requestBody: AvaliableLocationPayload = {
             CityName: '',
-            PreferredDay: this.config.location.preferredDays,
+            PreferredDay: 0,
             // 71 is new driver license
             TypeId: this.config.personalInfo.typeId || 71,
             ZipCode: this.config.location.zipCode,
@@ -137,7 +142,7 @@ class TexasScheduler {
     private async getLocationDates(location: AvaliableLocationResponse) {
         const requestBody: AvaliableLocationDatesPayload = {
             LocationId: location.Id,
-            PreferredDay: this.config.location.preferredDays,
+            PreferredDay: 0,
             SameDay: this.config.location.sameDay,
             StartDate: null,
             TypeId: this.config.personalInfo.typeId || 71,
@@ -148,9 +153,12 @@ class TexasScheduler {
             const today = dayjs();
             return (
                 AvailabilityDate.isBetween(today.subtract(this.config.location.daysAround.start, 'day'), today.add(this.config.location.daysAround.end, 'day'), 'day') &&
-                date.AvailableTimeSlots.length > 0
+                date.AvailableTimeSlots.length > 0 &&
+                this.config.location.preferredDays.includes(AvailabilityDate.day())
             );
         });
+
+        console.log(avaliableDates);
         if (avaliableDates.length !== 0) {
             const booking = avaliableDates[0].AvailableTimeSlots[0];
             log.info(`${location.Name} is avaliable on ${booking.FormattedStartDateTime}`);

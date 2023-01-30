@@ -31,8 +31,12 @@ function parsePhoneNumber(phoneNumber: string) {
     return phoneNumber.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
 }
 
-function parsePreferredDays(preferredDay: string): number {
-    preferredDay = preferredDay.toLowerCase();
-    if (preferredDayList[preferredDay]) return preferredDayList[preferredDay];
-    else return 0;
+function parsePreferredDays(preferredDay: string[]): number[] {
+    const arr: number[] = [];
+    if (!preferredDay || !Array.isArray(preferredDay)) return arr;
+    for (let days of preferredDay) {
+        days = days.toLowerCase();
+        if (preferredDayList[days]) arr.push(preferredDayList[days]);
+    }
+    return arr;
 }

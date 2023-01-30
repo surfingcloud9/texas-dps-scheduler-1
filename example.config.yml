@@ -22,13 +22,13 @@ location:
   # Get appointment from all DPS location by distance from the zipcode, will auto skip this when pickDPSLocation is true
   miles: 15
   # Put empty ('') for any day
-  preferredDays: 'Monday'
+  preferredDays: ['Monday']
   # Put true/false without quotes if you want to book only same day appointment
   sameDay: false
   # Put how many day from today you want to book from start to end (7 is a good number)
   daysAround:
     start: 0
-    end: 7
+    end: 1000
 
 appSettings:
   # Put true/false without quotes if you want to cancel the appointment automatically if found existing appointment
